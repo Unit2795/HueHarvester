@@ -3,13 +3,14 @@ document.addEventListener(
 	async function () {
 		let [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
 
+		// Fetch all of the CSS colors from the current page using computed styles
 		chrome.scripting.executeScript(
 			{
 				target: {
 					tabId: tab.id,
 					allFrames: true
 				},
-				files: ['src/content.js']
+				files: ['dist/content.js']
 			},
 			function(message) {
 				const colorList = document.getElementById('css-colors');
@@ -30,7 +31,43 @@ document.addEventListener(
 			}
 		);
 
-		chrome.tabs.captureVisibleTab(null, {format: 'png'}, function(dataUrl) {
+		chrome.scripting.executeScript({
+			target: {tabId: tab.id},
+			files: ['src/html2canvas.min.js']
+		}, () => {
+			console.log('html2canvas loaded');
+			chrome.scripting.executeScript(
+				{
+					target: {tabId: tab.id},
+					files: ['src/canvas.js']
+				},
+				async function(message) {
+					const dataUrl = message[0].result;
+					const img = document.getElementById('site-preview');
+					await new Promise((r) => {
+						img.src = dataUrl;
+						img.onload = r;
+					})
+
+					const colorThief = new ColorThief();
+
+					const dominantColor = colorThief.getColor(img);
+
+					document.getElementById('dominant-color').style.backgroundColor = `rgb(${dominantColor})`;
+
+					const palette = colorThief.getPalette(img, 8);
+
+					displayColors(palette);
+
+					console.log(palette);
+
+					//console.log('Dominant color:', dataUrl);
+				}
+			);
+		});
+
+		// Capture a screenshot of the current tab and analyze the colors
+		/*chrome.tabs.captureVisibleTab(null, {format: 'png'}, function(dataUrl) {
 			const colorSimilarityThreshold = 20;
 
 			document.getElementById('site-preview').src = dataUrl;
@@ -75,21 +112,51 @@ document.addEventListener(
 				displayColors(rgbColors);
 			};
 			image.src = dataUrl;
-		});
+		});*/
 	}
 );
 
+function takeScreenshot() {
+	console.log("Hey!");
+	/*html2canvas(document.body, {
+		useCORS: true
+	}).then(canvas => {
+		const dataUrl = canvas.toDataURL('image/png');
+		console.log("Testing 123");
+		console.log(dataUrl);
+		// You can handle the data URL according to your needs (save, send, etc.)
+	});*/
+}
+
+
+function capturePageImage(tabId, scrollPosition) {
+	chrome.scripting.executeScript({
+		target: {
+			tabId,
+			allFrames: true
+		},
+		func: scrollToNext,
+		args: [scrollPosition]
+	});
+}
+
+
+
+// Display the calculated image colors and their frequency in the popup
 function displayColors(colors) {
 	const colorList = document.getElementById('image-colors');
 	colorList.innerHTML = ''; // Clear previous results
 	colors.forEach((value, key) => {
 		const item = document.createElement('li');
-		item.textContent = `${value}%`;
-		item.style = `background-color: rgb(${key})`;
+		//item.textContent = `${value}%`;
+		item.style = `background-color: rgb(${value})`;
 		colorList.appendChild(item);
 	});
 }
 
+/*
+ RGB <-> LAB conversion functions and deltaE/similarity calculation
+*/
 // Courtesy of https://github.com/antimatter15/rgb-lab
 // the following functions are based off of the pseudocode
 // found on www.easyrgb.com

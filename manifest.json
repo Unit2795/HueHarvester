@@ -10,9 +10,8 @@
 	},
 	"content_scripts": [
 		{
-			"all_frames": true,
 			"matches": ["<all_urls>"],
-			"js": ["src/content.js"]
+			"js": ["dist/content.js", "src/canvas.js", "src/html2canvas.min.js"]
 		}
 	]
 }

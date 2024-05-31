@@ -21,14 +21,15 @@ function getCSSColors() {
 		}
 	});
 
+	// Regular expression that matches RGBA values with a 0 alpha channel, to remove fully transparent colors
+	const regex = /\brgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*0(\.0*)?\s*\)/g;
+
 	// Remove null values and fully transparent colors
 	const colorArray = [...colors].filter(Boolean).filter(color => {
-		// Regular expression that matches RGBA values with a 0 alpha channel, to remove fully transparent colors
-		const regex = /\brgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*0(\.0*)?\s*\)/g;
 		return !regex.test(color);
 	});
 
-	return colorArray; // Remove empty values
+	return colorArray;
 }
 
 getCSSColors();
