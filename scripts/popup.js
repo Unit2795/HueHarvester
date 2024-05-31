@@ -1,12 +1,26 @@
 async function main() {
 	let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
+	let status = document.getElementById('status-message');
 
+	status.textContent = "Fetching CSS Colors...";
+
+	// Retrieve the CSS colors from the current page
 	try {
 		return chrome.scripting.executeScript({
 			target: {tabId: tab.id},
 			func: getCSSColors
-		}).then((result) => {
+		}).then((message) => {
+			let result;
+
+			if (!message || !message[0] || !message[0].result)
+			{
+				status.textContent = "Failed to extract CSS colors...";
+				return;
+			}
+
+			result = message[0].result;
+
 			console.log(result);
 		});
 	} catch (e) {
@@ -136,22 +150,42 @@ document.addEventListener(
 );*/
 
 const getCSSColors = () => {
-	const elements = ['html', 'body', 'p','div','a','button','input','span','h1','h2','h3','li','ul','table','th','tr','td'];
-
 	const colors = new Set();
+	const bgColors = new Set();
+	const borderColors = new Set();
+	const fillColors = new Set();
 
-	elements.forEach(element => {
-		document.querySelectorAll(element).forEach(el => {
-			const style = getComputedStyle(el);
-			const color = style.color;
-			/*const bgColor = style.backgroundColor;
-			const borderColor = style.borderColor;*/
+	document.querySelectorAll("*").forEach(el => {
+		const style = getComputedStyle(el);
 
-			colors.add(color);
+		if (style.color)
+		{
+			colors.add(style.color);
+		}
+
+		if (style.backgroundColor)
+		{
+			bgColors.add(style.backgroundColor);
+		}
+
+		if (style.fill)
+		{
+			fillColors.add(style.fill);
+		}
+
+		['borderBottomColor', 'borderTopColor', 'borderLeftColor', 'borderRightColor'].forEach(border => {
+			if (style[border]) {
+				borderColors.add(style[border]);
+			}
 		});
 	});
 
-	return [...colors];
+	return {
+		colors: [...colors],
+		bgColors: [...bgColors],
+		borderColors: [...borderColors],
+		fillColors: [...fillColors]
+	};
 }
 
 function takeScreenshot() {

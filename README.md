@@ -10,7 +10,6 @@ HueHarvester is a Google Chrome extension that extracts color palettes from webp
   - `html2canvas.min.js` - HTML2Canvas library for rendering the current webpage as an image
 - `scripts/` - Javascript source files
   - `canvas.js` - Uses HTML2Canvas to turn the current webpage into a base64 image and returns the image data
-  - `cssExtract.js` - Extracts colors from the computed styles of the current webpage
   - `popup.js` - Primary logic responsible for executing the content scripts, and displaying the extracted colors in the extension's popup window
 - `manifest.json` - Google Chrome extension configuration file
 - `popup.css` - CSS file for the extension's popup window

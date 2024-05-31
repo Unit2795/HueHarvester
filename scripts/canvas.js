@@ -1,3 +1,4 @@
+/*
 async function captureCanvas() {
 	const canvas = await html2canvas(document.body, {
 		allowTaint: true,
@@ -13,3 +14,4 @@ async function captureCanvas() {
 ( async () => {
     return captureCanvas()
 } )();
+*/
