@@ -25,7 +25,7 @@ document.addEventListener(
 				colors.forEach(color =>
 					{
 						const item = document.createElement('li');
-						item.textContent = color;
+						item.style = `background-color: ${color}`;
 						colorList.appendChild(item);
 					}
 				);
@@ -51,7 +51,7 @@ document.addEventListener(
 				}
 
 				const sortedColors = [...colorCounts.entries()].sort((a, b) => b[1] - a[1]);
-				const topColors = sortedColors.slice(0, 10);
+				const topColors = sortedColors.slice(0, 200);
 				displayColors(topColors);
 			};
 			image.src = dataUrl;
@@ -64,7 +64,7 @@ function displayColors(colors) {
 	colorList.innerHTML = ''; // Clear previous results
 	colors.forEach(color => {
 		const item = document.createElement('li');
-		item.textContent = `${color[0]}: ${color[1]}`;
+		item.style = `background-color: ${color[0]}`;
 		colorList.appendChild(item);
 	});
 }

@@ -1,0 +1,22 @@
+:root
+{
+    width: 600px;
+    height: 600px;
+    text-align: center;
+    background-color: #111827;
+    color: white;
+}
+
+ul
+{
+    display: flex;
+    flex-flow: wrap;
+    padding: 0;
+    list-style: none;
+}
+
+ul li
+{
+    width: 24px;
+    height: 24px;
+}
