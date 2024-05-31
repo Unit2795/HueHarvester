@@ -1,10 +1,28 @@
+async function main() {
+	let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+
+	try {
+		return chrome.scripting.executeScript({
+			target: {tabId: tab.id},
+			func: getCSSColors
+		}).then((result) => {
+			console.log(result);
+		});
+	} catch (e) {
+		console.error(`failed to fetch CSS colors: ${e}`);
+	}
+}
+
+main();
+/*
 document.addEventListener(
 	'DOMContentLoaded',
 	async function () {
-		let [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+
 
 		// Fetch all of the CSS colors from the current page using computed styles
-		chrome.scripting.executeScript(
+		/!*chrome.scripting.executeScript(
 			{
 				target: {
 					tabId: tab.id,
@@ -21,17 +39,18 @@ document.addEventListener(
 					return;
 				}
 				const colors = message[0].result;
-				colors.forEach(color =>
+				console.log("colors:" ,message);
+				/!*colors.forEach(color =>
 					{
 						const item = document.createElement('li');
 						item.style = `background-color: ${color}`;
 						colorList.appendChild(item);
 					}
-				);
+				);*!/
 			}
-		);
+		);*!/
 
-		chrome.scripting.executeScript({
+		/!*chrome.scripting.executeScript({
 			target: {tabId: tab.id},
 			files: ['src/html2canvas.min.js']
 		}, () => {
@@ -55,7 +74,7 @@ document.addEventListener(
 
 					document.getElementById('dominant-color').style.backgroundColor = `rgb(${dominantColor})`;
 
-					const palette = colorThief.getPalette(img, 8);
+					const palette = colorThief.getPalette(img, 18);
 
 					displayColors(palette);
 
@@ -64,10 +83,10 @@ document.addEventListener(
 					//console.log('Dominant color:', dataUrl);
 				}
 			);
-		});
+		});*!/
 
 		// Capture a screenshot of the current tab and analyze the colors
-		/*chrome.tabs.captureVisibleTab(null, {format: 'png'}, function(dataUrl) {
+		/!*chrome.tabs.captureVisibleTab(null, {format: 'png'}, function(dataUrl) {
 			const colorSimilarityThreshold = 20;
 
 			document.getElementById('site-preview').src = dataUrl;
@@ -112,9 +131,28 @@ document.addEventListener(
 				displayColors(rgbColors);
 			};
 			image.src = dataUrl;
-		});*/
+		});*!/
 	}
-);
+);*/
+
+const getCSSColors = () => {
+	const elements = ['html', 'body', 'p','div','a','button','input','span','h1','h2','h3','li','ul','table','th','tr','td'];
+
+	const colors = new Set();
+
+	elements.forEach(element => {
+		document.querySelectorAll(element).forEach(el => {
+			const style = getComputedStyle(el);
+			const color = style.color;
+			/*const bgColor = style.backgroundColor;
+			const borderColor = style.borderColor;*/
+
+			colors.add(color);
+		});
+	});
+
+	return [...colors];
+}
 
 function takeScreenshot() {
 	console.log("Hey!");
