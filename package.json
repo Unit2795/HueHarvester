@@ -1,21 +1,33 @@
 {
-  "name": "HueHarvester",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "hueharvester",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
   "engines": {
     "node": ">=22.1.0",
     "pnpm": ">=9.1.0"
   },
   "scripts": {
-    "build": "pnpm rollup -c"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.8",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "rollup": "^4.18.0"
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "chrome-types": "^0.1.286",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0"
   }
 }
