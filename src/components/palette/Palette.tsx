@@ -7,12 +7,27 @@ import {ColorFormat} from "../../App.tsx";
 const colorLabel = (hex: string, format: ColorFormat): string => {
     switch(format)
     {
+        case "hsi": {
+            const [h, s, i] = chroma(hex).hsi();
+            return `${isNaN(h) ? "0" : Math.round(h)}, ${Math.round(s * 100)}%, ${Math.round(i * 100)}%`;
+        }
+        case "hsv": {
+            const [h, s, v] = chroma(hex).hsv();
+            return `${isNaN(h) ? "0" : Math.round(h)}, ${Math.round(s * 100)}%, ${Math.round(v * 100)}%`;
+        }
+        case "lab": {
+            const [l, a, b] = chroma(hex).lab();
+            return `${Math.round(l)}, ${Math.round(a)}, ${Math.round(b)}`;
+        }
+        case "lch": {
+            const [l, c, h] = chroma(hex).lch();
+            return `${Math.round(l)}, ${Math.round(c)}, ${isNaN(h) ? "0" : Math.round(h)}`;
+        }
         case "rgb": {
             const [r, g, b] = chroma(hex).rgb();
             return `${r}, ${g}, ${b}`;
         }
         case "hsl": {
-            console.log(chroma(hex).hsl());
             const [h, s, l] = chroma(hex).hsl();
             return `${isNaN(h) ? "0" : Math.round(h)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%`;
         }
@@ -30,7 +45,7 @@ const ColorItem = (
         colorFormat: ColorFormat
     }
 ) => {
-    const label = colorLabel(color, colorFormat)
+    const label = colorFormat === "hex" ? color : colorLabel(color, colorFormat)
 
     return (
         <div className={"w-16 flex flex-col cursor-pointer"} onClick={() => {

@@ -3,7 +3,7 @@ import Spinner from "./components/spinner/Spinner.tsx";
 import {CssColor, getCSSColors} from "./lib/colors.ts";
 import Palette from "./components/palette/Palette.tsx";
 
-export type ColorFormat = "rgb" | "hex" | "hsl";
+export type ColorFormat = "rgb" | "hex" | "hsl" | "hsi" | "hsv" | "lab" | "lch";
 
 function App() {
     const [loading, setLoading] = useState<string | null>("Loading Hue Harvester...");
@@ -56,6 +56,10 @@ function App() {
                             <option value="hex">Hex</option>
                             <option value="rgb">RGB</option>
                             <option value="hsl">HSL</option>
+                            <option value="hsi">HSI</option>
+                            <option value="hsv">HSV</option>
+                            <option value="lab">LAB</option>
+                            <option value="lch">LCH</option>
                         </select>
                         <h1 className={"text-xl"}>CSS Colors</h1>
                         <div className={"divide-y divide-gray-400 bg-stone-700 mt-6"}>
