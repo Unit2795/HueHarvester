@@ -27,6 +27,11 @@ body
 
 html
 {
+  /*Had to add this since when opening a dropdown in HeadlessUI, it for some reason adds right padding
+    (apparently to prevent content jumping when the scrollbar disappears). This messes up the layout, so I'm preventing
+    it from messing with the padding here
+  */
+  padding: 0 !important;
   width: 760px;
   height: 560px;
 }
