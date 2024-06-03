@@ -19,23 +19,15 @@ function App() {
         {
             setLoading("Detecting CSS Colors...");
 
-            try {
-                return chrome.scripting.executeScript({
-                    target: {tabId: tab.id},
-                    func: getCSSColors
-                }).then((message) => {
-                    if (!message || !message[0] || !message[0].result)
-                    {
-                        setError("Failed to extract CSS colors...");
-                        return;
-                    }
+            const newColors = await getCSSColors(tab.id);
 
-                    const result = message[0].result;
-
-                    setCssColor(result);
-                });
-            } catch (e) {
-                console.error(`failed to fetch CSS colors: ${e}`);
+            if (newColors)
+            {
+                setCssColor(newColors);
+                setLoading(null);
+            } else
+            {
+                setError("Failed to detect CSS Colors...");
             }
         } else
         {
@@ -54,9 +46,11 @@ function App() {
                 <h2>Background Color</h2>
                 <div className={"palette"}>
                     {
-                        cssColor.bgColors.map((color, index) => (
-                            <div key={index} style={{backgroundColor: color, width: "50px", height: "50px"}}>{color}</div>
-                        ))
+                        cssColor.bgColors.map((color, index) => {
+                            return(
+                                <div key={index} style={{backgroundColor: color, width: "50px", height: "50px"}}>{color}</div>
+                            );
+                        } )
                     }
                 </div>
                 <h2>Text Color</h2>
