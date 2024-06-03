@@ -8,43 +8,24 @@ export type CssColor = {
 	fillColors: string[]
 };
 
-function groupColorsByHue(colors: string[]) {
-	return colors.map(color => ({
-		color,
-		hsl: chroma(color).hsl()
-	}))
-		.sort((a, b) => {
-			// Sorting primarily by hue (HSL[0]), then by saturation (HSL[1]), then by lightness (HSL[2])
-			// Adding checks for undefined due to achromatic colors (black, white, grays) which have no hue
-			return (a.hsl[0] === null ? 360 : a.hsl[0]) - (b.hsl[0] === null ? 360 : b.hsl[0]) ||
-				a.hsl[1] - b.hsl[1] ||
-				a.hsl[2] - b.hsl[2];
-		})
-		.map(entry => entry.color); // Returning sorted array of color strings
+function groupColorsByHue(colors: string[]): string[] {
+	return colors
+		.map(color => ({ color, hsl: chroma(color).hsl() }))
+		// Sorting primarily by hue (HSL[0]), then by saturation (HSL[1]), then by lightness (HSL[2])
+		// Adding checks for undefined due to achromatic colors (black, white, grays) which have no hue
+		.sort((a, b) => (a.hsl[0] ?? 360) - (b.hsl[0] ?? 360) || a.hsl[1] - b.hsl[1] || a.hsl[2] - b.hsl[2])
+		.map(({ color }) => color);
 }
 
 // Detect URL, Transparent colors, and black/white
-const isBadColor = (color: string) => {
-	let isValidColor = false;
-	let chromaColor;
+const isBadColor = (color: string): boolean => {
 	try {
-		isValidColor = chroma.valid(color);
-		chromaColor = chroma(color);
-	}
-	catch (e) {
+		const chromaColor = chroma(color);
+		const [r, g, b] = chromaColor.rgb();
+		return !chroma.valid(color) || ['url(', 'transparent'].some(invalid => color.startsWith(invalid)) || chromaColor.alpha() === 0 || (r === 0 && g === 0 && b === 0) || (r === 255 && g === 255 && b === 255);
+	} catch {
 		return true;
 	}
-
-	// Get RGB values to check for pure black or pure white
-	const [r, g, b] = chromaColor.rgb();
-	if ((r === 0 && g === 0 && b === 0) || (r === 255 && g === 255 && b === 255)) {
-		return true; // Return true if the color is pure black or pure white
-	}
-
-	return !isValidColor ||
-		color.startsWith("url(") ||
-		color === "transparent" ||
-		chromaColor.alpha() === 0;
 };
 
 const getComputedColors = () => {
@@ -110,7 +91,7 @@ export const getCSSColors = async (tabId: number): Promise<CssColor | undefined>
 		// Parse color and remove invalid colors
 		Object.keys(colors).forEach(key => {
 			// @ts-ignore
-			colors[key] = colors[key].filter(color => !isBadColor(color));
+			colors[key] = colors[key].filter(color => !isBadColor(color)).map(color => chroma(color).css());
 
 			// Group colors by hue
 			// @ts-ignore
