@@ -30,13 +30,17 @@ const ColorItem = (
         colorFormat: ColorFormat
     }
 ) => {
+    const label = colorLabel(color, colorFormat)
+
     return (
-        <div className={"w-16 flex flex-col"}>
+        <div className={"w-16 flex flex-col cursor-pointer"} onClick={() => {
+            navigator.clipboard.writeText(label);
+        }}>
             {/*Apply a white background behind the palette color, for RGBA colors*/}
-            <div className={"w-full h-8 border-red  bg-white rounded-t-lg relative cursor-pointer"}>
+            <div className={"w-full h-8 border-red  bg-white rounded-t-lg relative"}>
                 <div className={"w-full h-full rounded-t-lg"} style={{backgroundColor: color}}/>
             </div>
-            <div className={"w-full text-center side-gradient p-px flex-1 text-xs"}>{colorLabel(color, colorFormat)}</div>
+            <div className={"w-full text-center side-gradient p-px flex-1 text-xs"}>{label}</div>
         </div>
     );
 };
