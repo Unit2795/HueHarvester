@@ -7,6 +7,7 @@ function App() {
     const [loading, setLoading] = useState<string | null>("Loading Hue Harvester...");
     const [error, setError] = useState<string | null>(null);
     const [cssColor, setCssColor] = useState<CssColor>({
+        all: [],
         colors: [],
         bgColors: [],
         borderColors: [],
@@ -41,19 +42,28 @@ function App() {
     }, []);
 
     return (
-        <div>
-            <div>
-                <h1>CSS Colors</h1>
-                <Palette colors={cssColor.bgColors} title={"Background Color"}/>
-                <Palette colors={cssColor.colors} title={"Text Color"}/>
-                <Palette colors={cssColor.borderColors} title={"Border Color"}/>
-                <Palette colors={cssColor.fillColors} title={"Fill Color"}/>
-            </div>
+        <div className={"m-6 pb-10"}>
+            {
+                !loading && !error && (
+                    <div>
+                        <h1 className={"text-xl"}>CSS Colors</h1>
+                        <div className={"divide-y divide-gray-400 bg-stone-700 mt-6"}>
+                            <Palette colors={cssColor.all} title={"All Colors"}/>
+                            <Palette colors={cssColor.bgColors} title={"Background Colors"}/>
+                            <Palette colors={cssColor.colors} title={"Text Colors"}/>
+                            <Palette colors={cssColor.borderColors} title={"Border Colors"}/>
+                            <Palette colors={cssColor.fillColors} title={"Fill Colors"}/>
+                        </div>
+                    </div>
+                )
+            }
             {
                 loading && !error && (
-                    <div>
-                        <p>{loading}</p>
-                        <Spinner/>
+                    <div className={"w-full h-full flex justify-center align-middle"}>
+                        <div className={"flex-col flex"}>
+                            <Spinner/>
+                            <p className={"pt-4 text-lg"}>{loading}</p>
+                        </div>
                     </div>
                 )
             }
