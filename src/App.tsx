@@ -3,6 +3,8 @@ import Spinner from "./components/spinner/Spinner.tsx";
 import {CssColor, getCSSColors} from "./lib/colors.ts";
 import Palette from "./components/palette/Palette.tsx";
 
+export type ColorFormat = "rgb" | "hex" | "hsl";
+
 function App() {
     const [loading, setLoading] = useState<string | null>("Loading Hue Harvester...");
     const [error, setError] = useState<string | null>(null);
@@ -13,6 +15,8 @@ function App() {
         borderColors: [],
         fillColors: []
     });
+    // TODO: Switch this to hex once the text overflow issue on palette labels is fixed
+    const [colorFormat, setColorFormat] = useState<ColorFormat>("hsl");
 
     async function calculateColors() {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -46,13 +50,20 @@ function App() {
             {
                 !loading && !error && (
                     <div>
+                        <select value={colorFormat} onChange={(e) => {
+                            setColorFormat(e.target.value as ColorFormat);
+                        }}>
+                            <option value="hex">Hex</option>
+                            <option value="rgb">RGB</option>
+                            <option value="hsl">HSL</option>
+                        </select>
                         <h1 className={"text-xl"}>CSS Colors</h1>
                         <div className={"divide-y divide-gray-400 bg-stone-700 mt-6"}>
-                            <Palette colors={cssColor.all} title={"All Colors"}/>
-                            <Palette colors={cssColor.bgColors} title={"Background Colors"}/>
-                            <Palette colors={cssColor.colors} title={"Text Colors"}/>
-                            <Palette colors={cssColor.borderColors} title={"Border Colors"}/>
-                            <Palette colors={cssColor.fillColors} title={"Fill Colors"}/>
+                            <Palette colors={cssColor.all} title={"All Colors"} colorFormat={colorFormat}/>
+                            <Palette colors={cssColor.bgColors} title={"Background Colors"} colorFormat={colorFormat}/>
+                            <Palette colors={cssColor.colors} title={"Text Colors"} colorFormat={colorFormat}/>
+                            <Palette colors={cssColor.borderColors} title={"Border Colors"} colorFormat={colorFormat}/>
+                            <Palette colors={cssColor.fillColors} title={"Fill Colors"} colorFormat={colorFormat}/>
                         </div>
                     </div>
                 )

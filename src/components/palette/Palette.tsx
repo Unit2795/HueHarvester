@@ -1,21 +1,42 @@
 import './palette.css';
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
 import {ChevronDown} from "lucide-react";
+import chroma from "chroma-js";
+import {ColorFormat} from "../../App.tsx";
+
+const colorLabel = (hex: string, format: ColorFormat): string => {
+    switch(format)
+    {
+        case "rgb": {
+            const [r, g, b] = chroma(hex).rgb();
+            return `${r}, ${g}, ${b}`;
+        }
+        case "hsl": {
+            console.log(chroma(hex).hsl());
+            const [h, s, l] = chroma(hex).hsl();
+            return `${isNaN(h) ? "0" : Math.round(h)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%`;
+        }
+        default:
+            return hex;
+    }
+};
 
 const ColorItem = (
     {
-        color
+        color,
+        colorFormat
     } : {
-        color: string
+        color: string,
+        colorFormat: ColorFormat
     }
 ) => {
     return (
-        <div key={color} className={"w-16 flex flex-col"}>
+        <div className={"w-16 flex flex-col"}>
             {/*Apply a white background behind the palette color, for RGBA colors*/}
             <div className={"w-full h-8 border-red  bg-white rounded-t-lg relative cursor-pointer"}>
                 <div className={"w-full h-full rounded-t-lg"} style={{backgroundColor: color}}/>
             </div>
-            <div className={"w-full text-center side-gradient p-px flex-1 text-[10px]"}>{color}</div>
+            <div className={"w-full text-center side-gradient p-px flex-1 text-xs"}>{colorLabel(color, colorFormat)}</div>
         </div>
     );
 };
@@ -23,10 +44,12 @@ const ColorItem = (
 export const Palette = (
     {
         colors,
-        title
+        title,
+        colorFormat
     } : {
         colors: string[],
-        title: string
+        title: string,
+        colorFormat: ColorFormat
     }
 ) => {
     return (
@@ -37,7 +60,7 @@ export const Palette = (
                     {
                         colors.map((color) => {
                             return(
-                                <ColorItem color={color} key={color} />
+                                <ColorItem color={color} key={color} colorFormat={colorFormat} />
                             );
                         } )
                     }

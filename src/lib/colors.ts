@@ -91,7 +91,7 @@ export const getCSSColors = async (tabId: number): Promise<CssColor | undefined>
 		// Parse color and remove invalid colors
 		Object.keys(colors).forEach(key => {
 			// @ts-ignore
-			colors[key] = colors[key].filter(color => !isBadColor(color)).map(color => chroma(color).css());
+			colors[key] = colors[key].filter(color => !isBadColor(color)).map(color => chroma(color).hex());
 
 			// Group colors by hue
 			// @ts-ignore
@@ -99,8 +99,8 @@ export const getCSSColors = async (tabId: number): Promise<CssColor | undefined>
 		});
 
 		return colors;
-	} catch (e) {
-		console.error(`failed to fetch CSS colors: ${e}`);
+	} catch (error) {
+		console.error("failed to fetch CSS colors", error);
 		throw new Error("Failed to fetch CSS colors...")
 	}
 }
