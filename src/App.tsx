@@ -50,18 +50,20 @@ function App() {
             {
                 !loading && !error && (
                     <div>
-                        <select value={colorFormat} onChange={(e) => {
-                            setColorFormat(e.target.value as ColorFormat);
-                        }}>
-                            <option value="hex">Hex</option>
-                            <option value="rgb">RGB</option>
-                            <option value="hsl">HSL</option>
-                            <option value="hsi">HSI</option>
-                            <option value="hsv">HSV</option>
-                            <option value="lab">LAB</option>
-                            <option value="lch">LCH</option>
-                        </select>
-                        <h1 className={"text-xl"}>CSS Colors</h1>
+                        <div className={"flex"}>
+                            <h1 className={"text-xl"}>CSS Colors</h1>
+                            <select className={"w-40 h-8 ml-auto"} value={colorFormat} onChange={(e) => {
+                                setColorFormat(e.target.value as ColorFormat);
+                            }}>
+                                <option value="hex">Hex</option>
+                                <option value="rgb">RGB</option>
+                                <option value="hsl">HSL</option>
+                                <option value="hsi">HSI</option>
+                                <option value="hsv">HSV</option>
+                                <option value="lab">LAB</option>
+                                <option value="lch">LCH</option>
+                            </select>
+                        </div>
                         <div className={"divide-y divide-gray-400 bg-stone-700 mt-6"}>
                             <Palette colors={cssColor.all} title={"All Colors"} colorFormat={colorFormat}/>
                             <Palette colors={cssColor.bgColors} title={"Background Colors"} colorFormat={colorFormat}/>
