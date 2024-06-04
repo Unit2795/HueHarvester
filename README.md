@@ -1,4 +1,4 @@
-# HueHarvester
+# HueHarvester ![Hue Harvester Chrome Extension Logo](public/32.png "Title")
 
 ![Example palette from Hue Harvester Chrome Extension](docs/example.png "Title")
 
