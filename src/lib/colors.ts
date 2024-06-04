@@ -1,11 +1,21 @@
 import chroma from "chroma-js";
 
+export enum ColorFormat {
+	HEX = "hex",
+	RGB = "rgb",
+	HSL = "hsl",
+	HSI = "hsi",
+	HSV = "hsv",
+	LAB = "lab",
+	LCH = "lch"
+}
+
 export type CssColor = {
 	all: string[]
-	colors: string[]
-	bgColors: string[]
-	borderColors: string[]
-	fillColors: string[]
+	text: string[]
+	background: string[]
+	border: string[]
+	fill: string[]
 };
 
 function groupColorsByHue(colors: string[]): string[] {
@@ -67,10 +77,10 @@ const getComputedColors = () => {
 
 	return {
 		all: [...all],
-		colors: [...colors],
-		bgColors: [...bgColors],
-		borderColors: [...borderColors],
-		fillColors: [...fillColors]
+		text: [...colors],
+		background: [...bgColors],
+		border: [...borderColors],
+		fill: [...fillColors]
 	};
 };
 

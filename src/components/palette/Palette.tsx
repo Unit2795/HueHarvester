@@ -2,7 +2,7 @@ import './palette.css';
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
 import {ChevronDown} from "lucide-react";
 import chroma from "chroma-js";
-import {ColorFormat} from "../../App.tsx";
+import {ColorFormat} from "../../lib/colors.ts";
 
 const colorLabel = (hex: string, format: ColorFormat): string => {
     switch(format)

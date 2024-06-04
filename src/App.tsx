@@ -1,43 +1,35 @@
 import {useEffect, useState} from "react";
 import Spinner from "./components/spinner/Spinner.tsx";
-import {CssColor, getCSSColors} from "./lib/colors.ts";
+import {ColorFormat, CssColor, getCSSColors} from "./lib/colors.ts";
 import Palette from "./components/palette/Palette.tsx";
+import {capitalize} from "./lib/helper.ts";
 
-export type ColorFormat = "rgb" | "hex" | "hsl" | "hsi" | "hsv" | "lab" | "lch";
-
-function App() {
-    const [loading, setLoading] = useState<string | null>("Loading Hue Harvester...");
+const CalculateColors = () => {
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [cssColor, setCssColor] = useState<CssColor>({
         all: [],
-        colors: [],
-        bgColors: [],
-        borderColors: [],
-        fillColors: []
+        text: [],
+        background: [],
+        border: [],
+        fill: []
     });
-    // TODO: Switch this to hex once the text overflow issue on palette labels is fixed
-    const [colorFormat, setColorFormat] = useState<ColorFormat>("hsl");
+    const [colorFormat, setColorFormat] = useState<ColorFormat>(ColorFormat.HEX);
 
     async function calculateColors() {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        try {
+            const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+            if (!tab.id) throw new Error("Failed to detect active tab...");
 
-        if (tab.id)
-        {
-            setLoading("Detecting CSS Colors...");
-
+            setLoading(true);
             const newColors = await getCSSColors(tab.id);
+            if (!newColors) throw new Error("Failed to detect CSS Colors...");
 
-            if (newColors)
-            {
-                setCssColor(newColors);
-                setLoading(null);
-            } else
-            {
-                setError("Failed to detect CSS Colors...");
-            }
-        } else
-        {
-            setError("Failed to detect active tab...");
+            setCssColor(newColors);
+            setLoading(false);
+        } catch (error) {
+            setError((error as Error).message);
+            setLoading(false);
         }
     }
 
@@ -45,52 +37,42 @@ function App() {
         calculateColors()
     }, []);
 
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-full">
+                <Spinner />
+                <p className="text-lg pt-4">Loading...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return <div className="text-red-500 text-center">{error}</div>;
+    }
+
+    return (
+        <>
+            <div className="flex mb-6">
+                <h1 className="text-xl">CSS Colors</h1>
+                <select className="w-16 h-8 ml-auto" value={colorFormat} onChange={e => setColorFormat(e.target.value as ColorFormat)}>
+                    {Object.values(ColorFormat).map(format => (
+                        <option key={format} value={format}>{format.toUpperCase()}</option>
+                    ))}
+                </select>
+            </div>
+            <div className="divide-y divide-gray-400 bg-stone-700">
+                {Object.keys(cssColor).map(key => (
+                    <Palette key={key} colors={cssColor[key as keyof CssColor]} title={`${capitalize(key)} Colors`} colorFormat={colorFormat} />
+                ))}
+            </div>
+        </>
+    );
+};
+
+function App() {
     return (
         <div className={"m-6 pb-10"}>
-            {
-                !loading && !error && (
-                    <div>
-                        <div className={"flex"}>
-                            <h1 className={"text-xl"}>CSS Colors</h1>
-                            <select className={"w-40 h-8 ml-auto"} value={colorFormat} onChange={(e) => {
-                                setColorFormat(e.target.value as ColorFormat);
-                            }}>
-                                <option value="hex">Hex</option>
-                                <option value="rgb">RGB</option>
-                                <option value="hsl">HSL</option>
-                                <option value="hsi">HSI</option>
-                                <option value="hsv">HSV</option>
-                                <option value="lab">LAB</option>
-                                <option value="lch">LCH</option>
-                            </select>
-                        </div>
-                        <div className={"divide-y divide-gray-400 bg-stone-700 mt-6"}>
-                            <Palette colors={cssColor.all} title={"All Colors"} colorFormat={colorFormat}/>
-                            <Palette colors={cssColor.bgColors} title={"Background Colors"} colorFormat={colorFormat}/>
-                            <Palette colors={cssColor.colors} title={"Text Colors"} colorFormat={colorFormat}/>
-                            <Palette colors={cssColor.borderColors} title={"Border Colors"} colorFormat={colorFormat}/>
-                            <Palette colors={cssColor.fillColors} title={"Fill Colors"} colorFormat={colorFormat}/>
-                        </div>
-                    </div>
-                )
-            }
-            {
-                loading && !error && (
-                    <div className={"w-full h-full flex justify-center align-middle"}>
-                        <div className={"flex-col flex"}>
-                            <Spinner/>
-                            <p className={"pt-4 text-lg"}>{loading}</p>
-                        </div>
-                    </div>
-                )
-            }
-            {
-                error && (
-                    <div>
-                        <p>{error}</p>
-                    </div>
-                )
-            }
+            <CalculateColors />
         </div>
     )
 }
