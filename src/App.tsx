@@ -39,9 +39,9 @@ const CalculateColors = () => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-full">
+            <div className="flex justify-center items-center h-full flex-col">
                 <Spinner />
-                <p className="text-lg pt-4">Loading...</p>
+                <p className="text-lg pt-4">Harvesting Colors...</p>
             </div>
         );
     }
