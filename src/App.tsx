@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import Spinner from "./components/spinner/Spinner.tsx";
-import {ColorFormat, CssColor, getCSSColors} from "./lib/colors.ts";
+import {ColorFormat, CssColor, getCSSColors, getMedianCut, MedianCut} from "./lib/colors.ts";
 import Palette from "./components/palette/Palette.tsx";
 import {capitalize} from "./lib/helper.ts";
 import {pageBase64} from "./lib/imaging.ts";
@@ -17,6 +17,7 @@ const CalculateColors = () => {
     });
     const [colorFormat, setColorFormat] = useState<ColorFormat>(ColorFormat.HEX);
     const [base64, setBase64] = useState<string>();
+    const [medianCut, setMedianCut] = useState<MedianCut>();
 
     async function calculateColors() {
         try {
@@ -30,8 +31,11 @@ const CalculateColors = () => {
             setCssColor(newColors);
 
             const newBase64 = await pageBase64();
-            console.log(newBase64);
             setBase64(newBase64);
+
+            const newMedian = await getMedianCut(newBase64);
+
+            setMedianCut(newMedian);
 
             setLoading(false);
         } catch (error) {
@@ -71,6 +75,11 @@ const CalculateColors = () => {
                 {Object.keys(cssColor).map(key => (
                     <Palette key={key} colors={cssColor[key as keyof CssColor]} title={`${capitalize(key)} Colors`} colorFormat={colorFormat} />
                 ))}
+            </div>
+            <h1 className="text-xl mt-8 mb-6">Median Cut</h1>
+            <div className="bg-stone-700">
+                <Palette colors={medianCut?.dominantColor ? [medianCut?.dominantColor] : []} title="Median Cut Dominant Color" colorFormat={colorFormat} />
+                <Palette colors={medianCut?.palette || []} title="Median Cut Colors" colorFormat={colorFormat} />
             </div>
             <div className="bg-stone-700 p-4 mb-6 max-h-96 overflow-y-auto mt-8">
                 <img src={base64} alt="Screenshot" className="w-full rounded-md" />

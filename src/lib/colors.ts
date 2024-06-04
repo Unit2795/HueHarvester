@@ -1,4 +1,6 @@
 import chroma from "chroma-js";
+// @ts-ignore
+import ColorThief from "colorthief";
 
 export enum ColorFormat {
 	HEX = "hex",
@@ -104,3 +106,30 @@ export const getCSSColors = async (tabId: number): Promise<CssColor | undefined>
 		throw new Error("Failed to fetch CSS colors...")
 	}
 }
+
+// Hex format color results from Color Thief
+export type MedianCut = {
+	dominantColor: string
+	palette: string[]
+}
+
+export const getMedianCut = async (base64: string): Promise<MedianCut>  => {
+	const colorThief = new ColorThief();
+
+	// Color Thief library requires an image element to extract colors (cannot use base64 directly)
+	// https://github.com/lokesh/color-thief/issues/189
+	const img = document.createElement('img');
+	await new Promise((r) => {
+		img.src = base64;
+		img.onload = r;
+	});
+
+	const dominantColor = colorThief.getColor(img);
+
+	const palette = colorThief.getPalette(img, 8);
+
+	return {
+		dominantColor: chroma(dominantColor).hex(),
+		palette: palette.map((color: [number, number, number]) => chroma(color).hex())
+	};
+};
