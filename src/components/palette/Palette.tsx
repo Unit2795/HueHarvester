@@ -10,13 +10,13 @@ const colorLabel = (hex: string, format: ColorFormat): string => {
         case "hsi":
         case "hsv":
         case "hsl": {
-            const [h, s, x] = chroma(hex).hsl();
+            const [h, s, x] = chroma(hex)[format]();
             return `${isNaN(h) ? "0" : Math.round(h)}, ${Math.round(s * 100)}%, ${Math.round(x * 100)}%`;
         }
         case "rgb":
         case "lab":
         case "lch": {
-            const [x, y, z] = chroma(hex).lch();
+            const [x, y, z] = chroma(hex)[format]();
             return `${Math.round(x)}, ${Math.round(y)}, ${isNaN(z) ? "0" : Math.round(z)}`;
         }
         default:
