@@ -16,8 +16,5 @@
 	"action": {
 		"default_popup": "index.html",
 		"default_icon": "hue_harvester.png"
-	},
-	"host_permissions": [
-		"*://*/*"
-	]
+	}
 }
