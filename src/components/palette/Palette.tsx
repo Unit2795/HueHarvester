@@ -1,35 +1,23 @@
 import './palette.css';
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
-import {ChevronDown} from "lucide-react";
 import chroma from "chroma-js";
 import {ColorFormat} from "../../lib/colors.ts";
 
 const colorLabel = (hex: string, format: ColorFormat): string => {
     switch(format)
     {
-        case "hsi": {
-            const [h, s, i] = chroma(hex).hsi();
-            return `${isNaN(h) ? "0" : Math.round(h)}, ${Math.round(s * 100)}%, ${Math.round(i * 100)}%`;
-        }
-        case "hsv": {
-            const [h, s, v] = chroma(hex).hsv();
-            return `${isNaN(h) ? "0" : Math.round(h)}, ${Math.round(s * 100)}%, ${Math.round(v * 100)}%`;
-        }
-        case "lab": {
-            const [l, a, b] = chroma(hex).lab();
-            return `${Math.round(l)}, ${Math.round(a)}, ${Math.round(b)}`;
-        }
-        case "lch": {
-            const [l, c, h] = chroma(hex).lch();
-            return `${Math.round(l)}, ${Math.round(c)}, ${isNaN(h) ? "0" : Math.round(h)}`;
-        }
-        case "rgb": {
-            const [r, g, b] = chroma(hex).rgb();
-            return `${r}, ${g}, ${b}`;
-        }
+        case "hex":
+            return hex;
+        case "hsi":
+        case "hsv":
         case "hsl": {
-            const [h, s, l] = chroma(hex).hsl();
-            return `${isNaN(h) ? "0" : Math.round(h)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%`;
+            const [h, s, x] = chroma(hex).hsl();
+            return `${isNaN(h) ? "0" : Math.round(h)}, ${Math.round(s * 100)}%, ${Math.round(x * 100)}%`;
+        }
+        case "rgb":
+        case "lab":
+        case "lch": {
+            const [x, y, z] = chroma(hex).lch();
+            return `${Math.round(x)}, ${Math.round(y)}, ${isNaN(z) ? "0" : Math.round(z)}`;
         }
         default:
             return hex;
@@ -45,7 +33,7 @@ const ColorItem = (
         colorFormat: ColorFormat
     }
 ) => {
-    const label = colorFormat === "hex" ? color : colorLabel(color, colorFormat)
+    const label = colorLabel(color, colorFormat)
 
     return (
         <div className={"w-16 flex flex-col cursor-pointer"} onClick={() => {
@@ -72,20 +60,12 @@ export const Palette = (
     }
 ) => {
     return (
-        <Disclosure defaultOpen={true} as="div">
-            <DisclosureButton className={"p-2 w-full text-left hover:bg-black/20 flex text-lg"}>{title} ({colors.length}) <ChevronDown className={"inline ml-auto"} /></DisclosureButton>
-            <DisclosurePanel>
-                <div className={"flex flex-wrap gap-4 w-[712px] mx-auto py-4 bg-stone-600 p-1"}>
-                    {
-                        colors.map((color) => {
-                            return(
-                                <ColorItem color={color} key={color} colorFormat={colorFormat} />
-                            );
-                        } )
-                    }
-                </div>
-            </DisclosurePanel>
-        </Disclosure>
+        <details open>
+            <summary className={"h-12 hover:bg-stone-500 cursor-pointer text-xl p-2"}>{title} ({colors.length})</summary>
+            <div className={"flex flex-wrap gap-4 w-[712px] mx-auto py-4 bg-stone-600 p-1"}>
+                {colors.map((color) => <ColorItem color={color} key={color} colorFormat={colorFormat} />)}
+            </div>
+        </details>
     );
 };
 
