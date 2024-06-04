@@ -60,7 +60,6 @@ const getComputedColors = () => {
 			const color = style[prop as keyof CSSStyleDeclaration];
 			if (color && typeof color === 'string') {
 				const key = (prop.includes('border') ? 'border' : prop) as keyof typeof colors;
-				console.log(key, color);
 
 				colors[key].add(color);
 				colors.all.add(color);
