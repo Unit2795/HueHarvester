@@ -29,7 +29,7 @@ const CalculateColors = () => {
 
             setCssColor(newColors);
 
-            const newBase64 = await pageBase64(tab.id);
+            const newBase64 = await pageBase64();
             console.log(newBase64);
             setBase64(newBase64);
 
