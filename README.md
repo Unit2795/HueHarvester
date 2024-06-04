@@ -2,7 +2,11 @@
 
 ![Example palette from Hue Harvester Chrome Extension](docs/example.png "Title")
 
-HueHarvester is a Google Chrome extension that extracts color palettes from webpages using CSS and image analysis.
+HueHarvester is a Google Chrome extension that creates color palettes from webpages using CSS and image analysis. Including detection of dominant color.
+
+Click the extension's icon in your browser bar to begin the generation of the color palettes. Click individual colors to copy their value.
+
+Select from different color spaces to present colors in your preferred format (RGB, HSL, Hex, etc)
 
 **🚧WORK IN PROGRESS, PARDON OUR MESS🏗️**
 
