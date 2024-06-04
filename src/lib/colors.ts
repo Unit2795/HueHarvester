@@ -43,74 +43,60 @@ const isBadColor = (color: string): boolean => {
 	}
 };
 
+// Ran directly as content script, cannot use any variables/dependencies outside of the function
 const getComputedColors = () => {
-	const all = new Set<string>();
-	const colors = new Set<string>();
-	const bgColors = new Set<string>();
-	const borderColors = new Set<string>();
-	const fillColors = new Set<string>();
+	const colorProperties = ['color', 'backgroundColor', 'fill', 'borderBottomColor', 'borderTopColor', 'borderLeftColor', 'borderRightColor'];
+	const colors = {
+		all: new Set<string>(),
+		color: new Set<string>(),
+		backgroundColor: new Set<string>(),
+		border: new Set<string>(),
+		fill: new Set<string>()
+	};
 
 	document.querySelectorAll("*").forEach(el => {
 		const style = getComputedStyle(el);
+		colorProperties.forEach(prop => {
+			const color = style[prop as keyof CSSStyleDeclaration];
+			if (color && typeof color === 'string') {
+				const key = (prop.includes('border') ? 'border' : prop) as keyof typeof colors;
+				console.log(key, color);
 
-		if (style.color)
-		{
-			colors.add(style.color);
-			all.add(style.color)
-		}
-
-		if (style.backgroundColor)
-		{
-			bgColors.add(style.backgroundColor);
-			all.add(style.backgroundColor)
-		}
-
-		if (style.fill)
-		{
-			fillColors.add(style.fill);
-			all.add(style.fill);
-		}
-
-		['borderBottomColor', 'borderTopColor', 'borderLeftColor', 'borderRightColor'].forEach((border) => {
-			const key = border as keyof CSSStyleDeclaration;
-			if (style && style[key] && typeof style[key] === "string") {
-				borderColors.add(<string>style[key]);
-				all.add(<string>style[key]);
+				colors[key].add(color);
+				colors.all.add(color);
 			}
 		});
 	});
 
 	return {
-		all: [...all],
-		text: [...colors],
-		background: [...bgColors],
-		border: [...borderColors],
-		fill: [...fillColors]
+		all: [...colors.all],
+		text: [...colors.color],
+		background: [...colors.backgroundColor],
+		border: [...colors.border],
+		fill: [...colors.fill]
 	};
 };
 
 export const getCSSColors = async (tabId: number): Promise<CssColor | undefined> => {
 	try {
-		const colors =  await chrome.scripting.executeScript({
-			target: {tabId},
+		const result = await chrome.scripting.executeScript({
+			target: { tabId },
 			func: getComputedColors
-		}).then((message) => {
-			if (!message || !message[0] || !message[0].result)
-			{
-				throw new Error();
-			}
-
-			return message[0].result;
 		});
 
-		// Parse color and remove invalid colors
-		Object.keys(colors).forEach(key => {
-			// @ts-ignore
-			colors[key] = colors[key].filter(color => !isBadColor(color)).map(color => chroma(color).hex());
+		const colors = result[0]?.result;
 
-			// Group colors by hue
-			// @ts-ignore
-			colors[key] = groupColorsByHue(colors[key]);
+		if (!colors) {
+			throw new Error("No CSS colors found or invalid content script execution.");
+		}
+
+		// Parse color and remove invalid colors
+		Object.keys(colors).forEach((key) => {
+			const index = key as keyof CssColor;
+
+			colors[index] = colors[index].filter(color => !isBadColor(color)).map(color => chroma(color).hex());
+
+			colors[index] = groupColorsByHue(colors[index]);
 		});
 
 		return colors;
