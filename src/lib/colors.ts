@@ -30,9 +30,14 @@ function groupColorsByHue(colors: string[]): string[] {
 // Detect URL, Transparent colors, and black/white
 const isBadColor = (color: string): boolean => {
 	try {
-		const chromaColor = chroma(color);
-		const [r, g, b] = chromaColor.rgb();
-		return !chroma.valid(color) || ['url(', 'transparent'].some(invalid => color.startsWith(invalid)) || chromaColor.alpha() === 0 || (r === 0 && g === 0 && b === 0) || (r === 255 && g === 255 && b === 255);
+		// Test for URL, transparent, and invalid colors
+		if (['url(', 'transparent'].some(prefix => color.startsWith(prefix)) || !chroma.valid(color)) {
+			return true;
+		}
+
+		// Test for black, white, or transparent
+		const [ r, g, b, alpha ] = chroma(color).rgba();
+		return alpha === 0 || (r === 0 && g === 0 && b === 0) || (r === 255 && g === 255 && b === 255);
 	} catch {
 		return true;
 	}
