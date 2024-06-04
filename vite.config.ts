@@ -10,6 +10,9 @@ export default defineConfig({
 	},
     plugins: [
         react(),
-        crx({manifest})
+        crx({
+			browser: "chrome",
+			manifest
+		})
     ],
 })

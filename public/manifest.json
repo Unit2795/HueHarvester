@@ -13,5 +13,11 @@
 	},
 	"host_permissions": [
 		"*://*/*"
+	],
+	"web_accessible_resources": [
+		{
+			"resources": ["html2canvas.min.js"],
+			"matches": ["<all_urls>"]
+		}
 	]
 }

@@ -3,6 +3,7 @@ import Spinner from "./components/spinner/Spinner.tsx";
 import {ColorFormat, CssColor, getCSSColors} from "./lib/colors.ts";
 import Palette from "./components/palette/Palette.tsx";
 import {capitalize} from "./lib/helper.ts";
+import {pageBase64} from "./lib/imaging.ts";
 
 const CalculateColors = () => {
     const [loading, setLoading] = useState(true);
@@ -15,6 +16,7 @@ const CalculateColors = () => {
         fill: []
     });
     const [colorFormat, setColorFormat] = useState<ColorFormat>(ColorFormat.HEX);
+    const [base64, setBase64] = useState<string>();
 
     async function calculateColors() {
         try {
@@ -26,6 +28,10 @@ const CalculateColors = () => {
             if (!newColors) throw new Error("Failed to detect CSS Colors...");
 
             setCssColor(newColors);
+
+            const newBase64 = await pageBase64(tab.id);
+            setBase64(newBase64);
+
             setLoading(false);
         } catch (error) {
             setError((error as Error).message);
@@ -64,6 +70,9 @@ const CalculateColors = () => {
                 {Object.keys(cssColor).map(key => (
                     <Palette key={key} colors={cssColor[key as keyof CssColor]} title={`${capitalize(key)} Colors`} colorFormat={colorFormat} />
                 ))}
+            </div>
+            <div className="bg-stone-700 p-4 mb-6 max-h-96 overflow-y-auto mt-8">
+                <img src={base64} alt="Screenshot" className="w-full rounded-md" />
             </div>
         </>
     );
