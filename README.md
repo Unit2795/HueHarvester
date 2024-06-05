@@ -11,7 +11,7 @@ Select from different color spaces to present colors in your preferred format (R
 **🚧WORK IN PROGRESS, PARDON OUR MESS🏗️**
 
 ## Development
-This library uses CRXJS to hot reload th extension during development. You'll need to enable developer mode in Chrome and load the unpacked `/dist` folder.
+This library uses CRXJS to hot reload the extension during development. You'll need to enable developer mode in Chrome and load the unpacked `/dist` folder.
 
 Start the development server using Vite:
 ```bash
