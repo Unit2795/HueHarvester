@@ -24,14 +24,6 @@ Install the dependencies using PNPM, the package.json enforces the Node and PNPM
 pnpm install
 ```
 
-### Hot-Reload
-We use CRXJS to allow for hot-reloading the extension. Once you start the development server and load the unpacked `/dist`folder in the Chrome Extensions page, you'll need to reload the extension to load the service worker, then the extension will automatically reload when you make changes to the source code until you stop the development server. When you start it again you'll just need to click the reload button again. 
-
-### Updating HTML2Canvas
-We run HTML2Canvas within a content script to capture the current page as an image. Instead of having to deal with trying to build the library and include it, we include a prepackaged, minified version. If you need to update HTML2Canvas, you can do so by replacing the `html2canvas.min.js` file in the `public` directory.
-
-At some later date, it may be good idea to figure out how we can make more complex content scripts and include NPM dependencies in them.
-
 ## Directory Structure
 Synopsis of key directories and files in the project:
 - `dist/` - Contains the built extension script files produced by Vite/Rollup
