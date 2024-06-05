@@ -51,7 +51,6 @@ Synopsis of key directories and files in the project:
 - [Chrome Extension API](https://developer.chrome.com/docs/extensions/reference/) (Extension Development)
 - [PNPM](https://pnpm.io/) (Package Management)
 - [Rollup](https://rollupjs.org/) (Bundling)
-- [HTML2Canvas](https://html2canvas.hertzen.com/) (Rendering Webpages as Images)
 - [Color Thief](https://github.com/lokesh/color-thief) (Median Cut Algorithm)
 - [CRXJS](https://crxjs.dev/vite-plugin) (Vite Plugin for Hot-Reloading Chrome Extensions)
 
