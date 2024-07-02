@@ -1,6 +1,8 @@
 import './palette.css';
 import chroma from "chroma-js";
 import {ColorFormat} from "../../lib/colors.ts";
+import Tooltip from "../tooltip/tooltip.tsx";
+import {useState} from "react";
 
 const colorLabel = (hex: string, format: ColorFormat): string => {
     switch(format)
@@ -33,17 +35,25 @@ const ColorItem = (
         colorFormat: ColorFormat
     }
 ) => {
-    const label = colorLabel(color, colorFormat)
+    const [tooltipLabel, setTooltipLabel] = useState(false);
+
+    const label = colorLabel(color, colorFormat);
 
     return (
         <div className={"w-16 flex flex-col cursor-pointer"} onClick={() => {
             navigator.clipboard.writeText(label);
+            setTooltipLabel(true);
+            setTimeout(() => setTooltipLabel(false), 1000);
         }}>
             {/*Apply a white background behind the palette color, for RGBA colors*/}
-            <div className={"w-full h-8 border-red  bg-white rounded-t-lg relative"}>
-                <div className={"w-full h-full rounded-t-lg"} style={{backgroundColor: color}}/>
-            </div>
-            <div className={"w-full text-center side-gradient p-px flex-1 text-xs"}>{label}</div>
+            <Tooltip tooltipText={tooltipLabel ? "Copied!" : "Copy"} classNames={{
+                tooltipText: tooltipLabel ? "text-lime-500" : "text-white"
+            }}>
+                <div className={"w-full h-8 border-red  bg-white rounded-t-lg relative"}>
+                    <div className={"w-full h-full rounded-t-lg"} style={{backgroundColor: color}}/>
+                </div>
+                <div className={"w-full text-center side-gradient p-px flex-1 text-xs"}>{label}</div>
+            </Tooltip>
         </div>
     );
 };
