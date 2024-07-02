@@ -1,6 +1,10 @@
 import chroma from "chroma-js";
 // @ts-ignore
 import ColorThief from "colorthief";
+// @ts-ignore
+import * as Vibrant from 'node-vibrant';
+// @ts-ignore
+import {ColorCube} from './colorcube.min.js';
 
 export enum ColorFormat {
 	HEX = "hex",
@@ -132,4 +136,45 @@ export const getMedianCut = async (base64: string): Promise<MedianCut>  => {
 		dominantColor: chroma(dominantColor).hex(),
 		palette: palette.map((color: [number, number, number]) => chroma(color).hex())
 	};
+};
+
+export const getKMeans = async (base64: string): Promise<string[]> => {
+	const img = document.createElement('img');
+	await new Promise((r) => {
+		img.src = base64;
+		img.onload = r;
+	});
+
+	const vibrant = await Vibrant.from(img).maxColorCount(8).getPalette();
+
+	const hexes = [];
+
+	for (const value of Object.values(vibrant))
+	{
+		if (value?.rgb && value.rgb.length === 3)
+		{
+			const hex = chroma(value.rgb).hex();
+			hexes.push(hex);
+		}
+	}
+
+	return hexes;
+};
+
+export const getColorCube = async (base64: string): Promise<string[]> => {
+	const img = document.createElement('img');
+	await new Promise((r) => {
+		img.src = base64;
+		img.onload = r;
+	});
+
+	const cc = new ColorCube( // all arguments are optional:
+		20,   // color-space resolution
+		0.2,  // brightness threshold
+		0.4   // distinctness threshold
+	);
+
+	const colors = cc.get_colors(img);
+
+	return colors;
 };
